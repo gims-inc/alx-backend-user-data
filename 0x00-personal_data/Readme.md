@@ -19,3 +19,5 @@
  [bcrpt](https://github.com/pyca/bcrypt/)
 
  [Logging Basics --youtube](https://www.youtube.com/watch?v=-ARI4Cz-awo)
+
+ [Real Python](https://realpython.com/python-logging/)
