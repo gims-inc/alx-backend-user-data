@@ -4,12 +4,14 @@
 from api.v1.auth.auth import Auth
 import base64
 
+
 class BasicAuth(Auth):
     """class BasicAuth
     """
+
     def extract_base64_authorization_header(
             self, authorization_header: str) -> str:
-        """Method that returns the Base64 part of the Authorization header 
+        """Method that returns the Base64 part of the Authorization header
         for a Basic Authentication:
         Args:
             authorization_header (str)
@@ -27,7 +29,7 @@ class BasicAuth(Auth):
         if not authorization_header.startswith("Basic "):
             return None
         return authorization_header.split("Basic ")[1]
-    
+
     def decode_base64_authorization_header(
             self, base64_authorization_header: str) -> str:
         """Returns the decoded value of a Base64 string

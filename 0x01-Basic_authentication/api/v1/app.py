@@ -26,6 +26,7 @@ excluded_paths = [
     '/api/v1/unauthorized/',
     '/api/v1/forbidden/']
 
+
 @app.errorhandler(404)
 def not_found(error) -> str:
     """ Not found handler
