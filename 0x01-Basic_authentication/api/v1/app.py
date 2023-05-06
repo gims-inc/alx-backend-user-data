@@ -18,7 +18,7 @@ auth = None
 
 if os.getenv('AUTH_TYPE') == 'basic_auth':
     auth = BasicAuth()
-else:
+elif os.getenv('AUTH_TYPE') == 'auth':
     auth = Auth()
 
 excluded_paths = [
