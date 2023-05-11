@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 
 
 from user import Base
@@ -46,11 +47,12 @@ class DB:
         """Returns the first row found in the users table as filtered by the
         method’s input arguments
         """
-        try:
-            user = self.__session.query(User).filter_by(**kwargs).one()
-            return user
-        except NoResultFound:
-            raise
+        if kwargs is None:
+            raise InvalidRequestError
+        user = self._session.query(User).filter_by(**kwargs).one()
+        if user is None:
+            raise NoResultFound
+        return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """method that takes as argument a required user_id integer
