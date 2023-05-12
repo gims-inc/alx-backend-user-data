@@ -58,13 +58,68 @@ def logout() -> str:
     If the user exists destroy the session and redirect the user to GET /.
     If the user does not exist, respond with a 403 HTTP status
     """
-    session_id = request.form.get('session_id')
+    session_id = request.cookies.get('session_id')
     user = AUTH.get_user_from_session_id(session_id)
     if user:
         AUTH.destroy_session(user.id)
         return redirect('/')
     else:
         abort(403)
+
+
+@app.route('/profile', methods=['GET'], strict_slashes=False)
+def profile() -> str:
+    """Find the user. If the user exist,
+    respond with a 200 HTTP status and the following JSON payload:
+    {"email": "<user email>"}
+    """
+    session_id = request.cookies.get('session_id')
+    user = AUTH.get_user_from_session_id(session_id)
+    if user:
+        return jsonify({"email": user.email}), 200
+    else:
+        abort(403)
+
+
+@app.route("/reset_password", methods=["POST"], strict_slashes=False)
+def get_reset_password_token() -> str:
+    """Reset token route
+    If the email is not registered, respond with a 403 status code.
+    Otherwise, generate a token and respond with a 200 HTTP status
+    and the following JSON payload:
+    {"email": "<user email>", "reset_token": "<reset token>"}
+    """
+    email = request.form.get("email")
+    reset_token = None
+    try:
+        reset_token = AUTH.get_reset_password_token(email)
+    except ValueError:
+        reset_token = None
+    if reset_token is None:
+        abort(403)
+    return jsonify({"email": email, "reset_token": reset_token})
+
+
+@app.route("/reset_password", methods=["PUT"], strict_slashes=False)
+def update_password() -> str:
+    """Update the password. If the token is invalid,
+    catch the exception and respond with a 403 HTTP code.
+    If the token is valid, respond with a 200 HTTP code and
+    the following JSON payload:
+    {"email": "<user email>", "message": "Password updated"}
+    """
+    email = request.form.get("email")
+    reset_token = request.form.get("reset_token")
+    new_password = request.form.get("new_password")
+    is_password_changed = False
+    try:
+        AUTH.update_password(reset_token, new_password)
+        is_password_changed = True
+    except ValueError:
+        is_password_changed = False
+    if not is_password_changed:
+        abort(403)
+    return jsonify({"email": email, "message": "Password updated"})
 
 
 if __name__ == "__main__":
